@@ -25,10 +25,13 @@ public class Player extends Entity{
         solidArea = new Rectangle();
         solidArea.x = 8;
         solidArea.y = 16;
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
         solidArea.width = 32;
         solidArea.height = 32;
         setDefaultValues();
         getPlayerImage();
+        int hasKey = 0;
     }
     public void setDefaultValues(){
         worldX = gp.tileSize * 23;
@@ -72,6 +75,9 @@ public class Player extends Entity{
         collisionOn = false;
         gp.checker.checkTile(this);
 
+        // check object collision
+        int objIndex = gp.checker.checkObject(this, true);
+        pickUpObject(objIndex);
         // if collision is false, player can move
         if (!collisionOn){
             switch (direction) {
@@ -118,6 +124,24 @@ public class Player extends Entity{
         }
     }
 
+    public void pickUpObject(int i){
+        if(i != 999){
+            String objectName = gp.obj[i].name;
+
+            switch (objectName){
+                case "Key":
+                    hasKey++;
+                    gp.obj[i] = null;
+                    break;
+                case "Door":
+                    if (hasKey > 0){
+                        gp.obj[i] = null;
+                        hasKey--;
+                    }
+                    break;
+            }
+        }
+    }
     public void draw(Graphics2D g2){
 //        g2.setColor(Color.white);
 //        g2.fillRect(x, y, gp.tileSize, gp.tileSize);
